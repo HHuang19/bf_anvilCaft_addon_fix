@@ -12,7 +12,7 @@ public class Packets {
         final PayloadRegistrar registrar = event.registrar(AnvilCaftAddon.MODID);
         registrar.playToServer(DoubleJumpPacket.TYPE, DoubleJumpPacket.CODEC, DoubleJumpPacket::DoubleJump);
         registrar.playToServer(ResetDoubleJumpPacket.TYPE, ResetDoubleJumpPacket.CODEC, ResetDoubleJumpPacket::handle);
-        registrar.playToServer(DoubleWalk.TYPE, DoubleWalk.CODEC, DoubleWalk::Double_Walk);
+        registrar.playToServer(DoubleWalk.TYPE, DoubleWalk.CODEC, (packet, context) -> DoubleWalk.Double_Walk(context));
 
 
     }

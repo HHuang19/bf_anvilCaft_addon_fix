@@ -1,5 +1,7 @@
 package com.bf.anvilcaftaddon;
 
+import com.bf.anvilcaftaddon.block.ModBlockEntity;
+import com.bf.anvilcaftaddon.block.ModBlocks;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import org.slf4j.Logger;
@@ -59,6 +61,8 @@ public class AnvilCaftAddon {
         DataComponents.register(modEventBus);//注册数据类型
         com.bf.anvilcaftaddon.Packet.Packets.init(modEventBus);//注册数据包
         EnchantmentEffects.register(modEventBus);//注册附魔
+        ModBlocks.register(modEventBus);
+        ModBlockEntity.register(modEventBus);
 
         // 将延迟寄存器注册到mod事件总线，这样块才能被注册
         //BLOCKS.register(modEventBus);

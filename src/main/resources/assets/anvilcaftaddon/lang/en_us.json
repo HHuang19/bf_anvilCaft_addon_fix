@@ -1,15 +1,3 @@
 {
-  "itemGroup.anvilcaftaddon": "Example Mod Tab",
-  "block.anvilcaftaddon.example_block": "Example Block",
-  "item.anvilcaftaddon.example_item": "Example Item",
-
-  "anvilcaftaddon.configuration.title": "AnvilCaft Addon Configs",
-  "anvilcaftaddon.configuration.section.anvilcaftaddon.common.toml": "AnvilCaft Addon Configs",
-  "anvilcaftaddon.configuration.section.anvilcaftaddon.common.toml.title": "AnvilCaft Addon Configs",
-  "anvilcaftaddon.configuration.items": "Item List",
-  "anvilcaftaddon.configuration.logDirtBlock": "Log Dirt Block",
-  "anvilcaftaddon.configuration.magicNumberIntroduction": "Magic Number Text",
-  "anvilcaftaddon.configuration.magicNumber": "Magic Number"
-
 
 }

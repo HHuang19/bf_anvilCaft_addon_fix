@@ -1,15 +1,16 @@
 package com.bf.anvilcaftaddon;
 
 
+import com.bf.anvilcaftaddon.block.ModBlocks;
 import dev.dubhe.anvilcraft.AnvilCraft;
 import dev.dubhe.anvilcraft.data.AnvilCraftDatagen;
-import dev.dubhe.anvilcraft.init.block.ModBlocks;
 import it.unimi.dsi.fastutil.Stack;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.food.FoodProperties;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -88,6 +89,9 @@ public class ModItems {
                     super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
                 }
             });
+
+    public static final DeferredItem<BlockItem> POWER_BLOCK_ITEM =
+            ITEMS.registerSimpleBlockItem("power_block", ModBlocks.POWER_BLOCK);
 
 
 

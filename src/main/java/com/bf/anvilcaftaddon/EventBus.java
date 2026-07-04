@@ -5,8 +5,8 @@ import com.bf.anvilcaftaddon.Packet.DoubleWalk;
 import com.bf.anvilcaftaddon.Packet.ResetDoubleJumpPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -29,7 +29,7 @@ public class EventBus {
         LocalPlayer player = mc.player;//玩家
         if (player == null) return;//如果不存在玩家，直接取消
         ItemStack boots = player.getInventory().armor.get(0);//获取靴子
-        ItemStack legs = player.getInventory().armor.get(2);//获取护腿
+        ItemStack legs = player.getInventory().armor.get(1);//获取护腿
         Boolean canJump = boots.get(DataComponents.CAN_DOUBLE_JUMP);//获取物品组件状态
 
         boolean isJumpDown = mc.options.keyJump.isDown();//获取空格键的状态
@@ -41,7 +41,7 @@ public class EventBus {
 
         TryJump(isJumpDown,isOnFly, boots, player, canJump);
         if (isOnGround && !wasOnGround) {
-            ResetDoubleJump(isOnGround, boots, player, canJump);
+            ResetDoubleJump(isOnGround, boots, canJump);
         }
         TrySping(isCtrlDown, legs, player);
 
@@ -77,7 +77,7 @@ public class EventBus {
         }
     }
 
-    private static void ResetDoubleJump(boolean isOnGround, ItemStack boots, LocalPlayer player, Boolean canJump){
+    private static void ResetDoubleJump(boolean isOnGround, ItemStack boots, Boolean canJump){
         if (isOnGround && (canJump == null || !canJump)) {
             if (!boots.isEmpty() && boots.getEnchantmentLevel(EnchantmentEffects.DOUBLE_JUMP) > 0) {
                 // 通知服务端重置
@@ -89,7 +89,7 @@ public class EventBus {
     private static void TrySping(boolean isCtrlDown, ItemStack legs, LocalPlayer player){
         if (isCtrlDown && !prevCtrlDown) {//按下Ctrl且上一秒Ctrl键没有按下时
 
-            //player.displayClientMessage(Component.literal("Double jump activated!"),false);
+            //player.displayClientMessage(Component.literal(legs.toString()),false);
 
             if (!legs.isEmpty()//护腿不为空
                     && legs.getEnchantmentLevel(EnchantmentEffects.DOUBLE_WALK) > 0//具有附魔
@@ -97,10 +97,15 @@ public class EventBus {
 
                 if (player.hurtTime > 0) return;
                 float yaw = player.getYRot();
-                double dirX = -Math.sin(yaw * Math.PI / 180.0);
-                double dirZ = Math.cos(yaw * Math.PI / 180.0);
-                player.setDeltaMovement(dirX * 1.5 * legs.getEnchantmentLevel(EnchantmentEffects.DOUBLE_WALK),
-                        0, dirZ * 1.5 * legs.getEnchantmentLevel(EnchantmentEffects.DOUBLE_WALK));
+
+                Vec3 viewVector = player.getDeltaMovement();
+                //player.setDeltaMovement(dirX * 1.5 * level, 0, dirZ * 1.5 * level);
+                if (viewVector.x == 0 && viewVector.z == 0){
+                    double dirX = -Math.sin(yaw * Math.PI / 180.0);
+                    double dirZ = Math.cos(yaw * Math.PI / 180.0);
+                    player.setDeltaMovement(dirX*2, 0, dirZ*2);
+                }
+                else player.setDeltaMovement(viewVector.x*10, viewVector.y*10, viewVector.z*10);
 
                 PacketDistributor.sendToServer(new DoubleWalk());
             }

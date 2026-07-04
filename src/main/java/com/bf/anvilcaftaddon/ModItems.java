@@ -32,16 +32,20 @@ public class ModItems {
     //延迟注册器，注册物品
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(AnvilCaftAddon.MODID);
 
+    // 磁铁：用于收放铁砧的物品
     public static DeferredItem<Item> Magnet =
             ITEMS.register("magnet",() -> new Item(new Item.Properties().stacksTo(1)
                     //food(new FoodProperties.Builder().alwaysEdible().nutrition(1).saturationModifier(2f).build()))
             ){
                 @Override
                 public InteractionResult useOn(UseOnContext context) {//实现收放铁砧
+                    // 仅在服务器端处理，且点击的不是空气
                     if (!context.getLevel().isClientSide && !context.getLevel().getBlockState(context.getClickedPos()).is(Blocks.AIR)) {
                         BlockState blockState = context.getLevel().getBlockState(context.getClickedPos());
                         ItemStack _This = context.getItemInHand();
                         BlockState AnvilState = context.getItemInHand().get(DataComponents.ANVIL_STATE);
+                        
+                        // 磁铁为空：收纳铁砧
                         if (AnvilState == null || AnvilState.equals(Blocks.AIR.defaultBlockState())) {
                             if (blockState.is(BlockTags.ANVIL)) {
     //                            context.getLevel().setBlock(context.getClickedPos(), Blocks.AIR.defaultBlockState(), 3);将目标方块先安全换成空气
@@ -56,6 +60,7 @@ public class ModItems {
                                 }
                             }
                         }
+                        // 磁铁有铁砧：放下铁砧
                         else {
                             BlockPos _TargetBlock = context.getClickedPos().relative(context.getClickedFace());
                             if (context.getLevel().getBlockState(_TargetBlock).is(Blocks.AIR)) {
@@ -79,6 +84,7 @@ public class ModItems {
 
                 @Override
                 public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+                    // 显示所携带的铁砧类型或提示空状态
                     if (stack.get(DataComponents.ANVIL_STATE) != null && !stack.get(DataComponents.ANVIL_STATE).is(Blocks.AIR)) {
                         tooltipComponents.add(Component.translatable("item.anvilcaftaddon.magnet.AVONtooltip").append(
                                 Component.literal(stack.get(DataComponents.ANVIL_STATE).getBlock().asItem().toString())
@@ -90,6 +96,7 @@ public class ModItems {
                 }
             });
 
+    // 电源方块物品
     public static final DeferredItem<BlockItem> POWER_BLOCK_ITEM =
             ITEMS.registerSimpleBlockItem("power_block", ModBlocks.POWER_BLOCK);
 

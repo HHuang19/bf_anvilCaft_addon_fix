@@ -5,6 +5,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
+// 注册网络包处理器：在注册阶段将自定义包类型与对应的处理方法绑定到通信系统
 public class Packets {
 
     public static void register(RegisterPayloadHandlersEvent event) {

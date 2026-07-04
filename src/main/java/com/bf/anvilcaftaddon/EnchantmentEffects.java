@@ -18,7 +18,8 @@ public class EnchantmentEffects {
     public static final DeferredRegister<Enchantment> ENCHANTMENTS =
             DeferredRegister.create(Registries.ENCHANTMENT, AnvilCaftAddon.MODID);
 
-    // 双跳附魔（double_jump）：作用于脚部装备（FOOT_ARMOR），配置了等级、花费等参数
+    // 双跳附魔（double_jump）：作用于脚部装备（FOOT_ARMOR）。
+    // 参数说明（按代码顺序）：等级上限 5，初始等级 1，获取/合成成本 15 到 35，权重 1，目标插槽组 FEET
     public static final DeferredHolder<Enchantment, Enchantment> DOUBLE_JUMP =
             ENCHANTMENTS.register("double_jump", () -> {
                 var boots = BuiltInRegistries.ITEM.getOrCreateTag(ItemTags.FOOT_ARMOR);
@@ -35,9 +36,8 @@ public class EnchantmentEffects {
                 ).build(ResourceLocation.parse(AnvilCaftAddon.MODID + "/double_jump"));
             });//雷·跃
 
-    // 双行附魔（double_walk）：与上面类似，当前仍使用 FOOT_ARMOR 标签和 LEGS 插槽设置，
-    // 注意：ResourceLocation 现在与 double_jump 相同（modid/double_jump），
-    // 虽然不会改动源码，但建议保持资源路径和注册名一致以避免混淆
+    // 双行附魔（double_walk）：作用于腿部装备（FOOT_ARMOR）。
+    // 参数说明（按代码顺序）：等级上限 5，初始等级 1，获取/合成成本 15 到 35，权重 1，目标插槽组 LEGS
     public static final DeferredHolder<Enchantment, Enchantment> DOUBLE_WALK =
             ENCHANTMENTS.register("double_walk", () -> {
                 var boots = BuiltInRegistries.ITEM.getOrCreateTag(ItemTags.FOOT_ARMOR);
@@ -55,7 +55,7 @@ public class EnchantmentEffects {
             });//雷·行
 
 
-    // 把 DeferredRegister 注册到 mod 事件总线，让附魔在游戏初始化时被注册
+    // 将 DeferredRegister 注册到 mod 的事件总线以便在启动时生效
     public static void register(IEventBus modEventBus) {
         EnchantmentEffects.ENCHANTMENTS.register(modEventBus);
     }

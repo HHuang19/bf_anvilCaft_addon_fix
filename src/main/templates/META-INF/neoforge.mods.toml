@@ -42,11 +42,15 @@ displayName="${mod_name}" #mandatory
 #credits="" #optional
 
 # The authors of the mod, displayed in the mod UI (optional)
-authors="bonesfrisk"
+authors="bonesfrisk & 嘟嘟哒"
 
 # The description text for the mod (multi line!) (#mandatory)
 description='''
-为铁砧工艺添加了大大小小各种新东西
+为铁砧工艺添加了大大小小各种新东西~
+制作人员：
+代码/逻辑 bonesfrisk(bf_ofo)
+资源 嘟嘟哒
+一些无关紧要的东西 HHuang19
 '''
 
 # The [[mixins]] block allows you to declare your mixin config to FML so that it gets loaded.

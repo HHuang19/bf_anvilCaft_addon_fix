@@ -19,7 +19,7 @@ public class EnchantmentEffects {
             DeferredRegister.create(Registries.ENCHANTMENT, AnvilCaftAddon.MODID);
 
     // 双跳附魔（double_jump）：作用于脚部装备（FOOT_ARMOR）。
-    // 参数说明（按代码顺序）：等级上限 5，初始等级 1，获取/合成成本 15 到 35，权重 1，目标插槽组 FEET
+    // 参数说明（按代码顺序）：等级上限 5，初始等级 1，获取/合成成本 15 到 35，权重 1，目标脚部插槽
     public static final DeferredHolder<Enchantment, Enchantment> DOUBLE_JUMP =
             ENCHANTMENTS.register("double_jump", () -> {
                 var boots = BuiltInRegistries.ITEM.getOrCreateTag(ItemTags.FOOT_ARMOR);
@@ -37,7 +37,7 @@ public class EnchantmentEffects {
             });//雷·跃
 
     // 双行附魔（double_walk）：作用于腿部装备（FOOT_ARMOR）。
-    // 参数说明（按代码顺序）：等级上限 5，初始等级 1，获取/合成成本 15 到 35，权重 1，目标插槽组 LEGS
+    // 参数说明（按代码顺序）：等级上限 5，初始等级 1，获取/合成成本 15 到 35，权重 1，目标腿部插槽
     public static final DeferredHolder<Enchantment, Enchantment> DOUBLE_WALK =
             ENCHANTMENTS.register("double_walk", () -> {
                 var boots = BuiltInRegistries.ITEM.getOrCreateTag(ItemTags.FOOT_ARMOR);

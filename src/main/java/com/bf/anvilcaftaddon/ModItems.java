@@ -96,7 +96,7 @@ public class ModItems {
                 }
             });
 
-    // 电源方块物品
+    // 能量方块物品
     public static final DeferredItem<BlockItem> POWER_BLOCK_ITEM =
             ITEMS.registerSimpleBlockItem("power_block", ModBlocks.POWER_BLOCK);
 

@@ -2,6 +2,10 @@ package com.bf.anvilcaftaddon;
 
 import com.bf.anvilcaftaddon.block.ModBlockEntity;
 import com.bf.anvilcaftaddon.block.ModBlocks;
+import dev.dubhe.anvilcraft.AnvilCraft;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.CreativeModeTabs;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import org.slf4j.Logger;
@@ -101,6 +105,10 @@ public class AnvilCaftAddon {
         //if (event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS) {
             //event.accept(EXAMPLE_BLOCK_ITEM);
         //}
+        if (event.getTabKey() == CreativeModeTabs.REDSTONE_BLOCKS) {
+            event.accept(ModItems.Magnet);
+            event.accept(ModItems.POWER_BLOCK_ITEM);
+        }
     }
 
     // You can use SubscribeEvent and let the Event Bus discover methods to call

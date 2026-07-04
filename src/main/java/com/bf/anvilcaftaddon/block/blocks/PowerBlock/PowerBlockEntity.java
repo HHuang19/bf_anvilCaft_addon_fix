@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
+// PowerBlock 的 BlockEntity：实现了 IPowerProducer，提供输出功率和范围等属性
 public class PowerBlockEntity extends BlockEntity implements IPowerProducer {
     @Nullable
     private PowerGrid grid = null;

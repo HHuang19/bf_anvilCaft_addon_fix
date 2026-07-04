@@ -22,7 +22,7 @@ import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 
-// The value here should match an entry in the META-INF/neoforge.mods.toml file
+// 这里的值应与 META-INF/neoforge.mods.toml 文件中的条目���匹配
 @Mod(AnvilCaftAddon.MODID)
 public class AnvilCaftAddon {
     // 在一个通用的地方定义模组ID，方便所有内容引用
@@ -38,7 +38,7 @@ public class AnvilCaftAddon {
 
     // 创建一个 id 为“anvilcaftaddon：example_block”的新块，结合命名空间和路径
     //public static final DeferredBlock<Block> EXAMPLE_BLOCK = BLOCKS.registerSimpleBlock("example_block", BlockBehaviour.Properties.of().mapColor(MapColor.STONE));
-    // 创建一个 id 为“anvilcaftaddon：example_block”的新方块物品，结合命名空间和路径
+    // 创建一个 id 为“anvilcaftaddon：example_block”的新��块物品，结合命名空间和路径
     //public static final DeferredItem<BlockItem> EXAMPLE_BLOCK_ITEM = ITEMS.registerSimpleBlockItem("example_block", EXAMPLE_BLOCK);
 
     // 创建一个 id 为“anvilcaftaddon：example_item”的新食物物品，营养值为1，饱和度为2
@@ -51,7 +51,7 @@ public class AnvilCaftAddon {
             //.withTabsBefore(CreativeModeTabs.COMBAT)
             //.icon(() -> EXAMPLE_ITEM.get().getDefaultInstance())
             //.displayItems((parameters, output) -> {
-                //output.accept(EXAMPLE_ITEM.get()); // 将示例物品添加到标签中。对于你自己的标签，推荐使用此方法而不是事件
+                //output.accept(EXAMPLE_ITEM.get()); // 将示例物品添加到标签中。对于你自己的标签，推荐使用此方法而��是事件
             //}).build());
 
     // mod类的构造子是加载mod时运行的第一个代码。
@@ -75,20 +75,20 @@ public class AnvilCaftAddon {
         // 将延迟寄存器注册到mod事件总线，这样创意模式标签才能被注册
         //CREATIVE_MODE_TABS.register(modEventBus);
 
-        // Register ourselves for server and other game events we are interested in.
-        // Note that this is necessary if and only if we want *this* class (AnvilCaftAddon) to respond directly to events.
-        // Do not add this line if there are no @SubscribeEvent-annotated functions in this class, like onServerStarting() below.
+        // 将本类注册到我们关心的服务器及其它游戏事件总线。
+        // 注意：仅当我们希望 *此* 类（AnvilCaftAddon）直接响应事件时才需要这样做。
+        // 如果类中没有用 @SubscribeEvent 注解的方法（例如下面的 onServerStarting()），则不要添加此行。
         NeoForge.EVENT_BUS.register(this);
 
-        // Register the item to a creative tab
+        // 将物品注册到创意模式标签
         modEventBus.addListener(this::addCreative);
 
-        // Register our mod's ModConfigSpec so that FML can create and load the config file for us
+        // 注册模组的 ModConfigSpec，以便 FML 为我们创建并加载配置文件
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {
-        // Some common setup code
+        // 一些通用的设置代码
         LOGGER.info("HELLO FROM COMMON SETUP");
 
         if (Config.LOG_DIRT_BLOCK.getAsBoolean()) {
@@ -100,7 +100,7 @@ public class AnvilCaftAddon {
         Config.ITEM_STRINGS.get().forEach((item) -> LOGGER.info("ITEM >> {}", item));
     }
 
-    // Add the example block item to the building blocks tab
+    // 将示例方块物品添加到建筑方块标签
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
         //if (event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS) {
             //event.accept(EXAMPLE_BLOCK_ITEM);
@@ -111,10 +111,10 @@ public class AnvilCaftAddon {
         }
     }
 
-    // You can use SubscribeEvent and let the Event Bus discover methods to call
+    // 你可以使用 @SubscribeEvent，让事件总线自动发现并调用方法
     @SubscribeEvent
     public void onServerStarting(ServerStartingEvent event) {
-        // Do something when the server starts
+        // 服务器启动时执行一些操作
         //LOGGER.info("HELLO from server starting");
     }
 }

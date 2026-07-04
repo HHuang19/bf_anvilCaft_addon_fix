@@ -8,6 +8,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
@@ -18,8 +19,8 @@ public class PowerBlockEntity extends BlockEntity implements IPowerProducer {
         super(ModBlockEntity.APOWER_BE.get(), pos, state);
     }
     @Override public int getOutputPower() { return 1; }
-    @Override public PowerComponentType getComponentType() { return PowerComponentType.PRODUCER; }
-    @Override public BlockPos getPos() { return getBlockPos(); }
+    @Override public @NotNull PowerComponentType getComponentType() { return PowerComponentType.PRODUCER; }
+    @Override public @NotNull BlockPos getPos() { return getBlockPos(); }
     @Override public @Nullable Level getCurrentLevel() { return level; }
     @Override public @Nullable PowerGrid getGrid() { return grid; }
     @Override public void setGrid(@Nullable PowerGrid g) { this.grid = g; }

@@ -92,6 +92,8 @@ public class ModItems {
 
     public static final DeferredItem<BlockItem> POWER_BLOCK_ITEM =
             ITEMS.registerSimpleBlockItem("power_block", ModBlocks.POWER_BLOCK);
+    public static final DeferredItem<BlockItem> ENDERPOLE_ITEM =
+            ITEMS.registerSimpleBlockItem("enderpole", ModBlocks.ENDERPOLE);
 
 
 

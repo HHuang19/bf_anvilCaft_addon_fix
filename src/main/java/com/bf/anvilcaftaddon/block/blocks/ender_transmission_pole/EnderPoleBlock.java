@@ -1,6 +1,7 @@
 package com.bf.anvilcaftaddon.block.blocks.ender_transmission_pole;
 
 import com.bf.anvilcaftaddon.DataComponents;
+import com.bf.anvilcaftaddon.block.ModBlocks;
 import dev.dubhe.anvilcraft.api.IHasMultiBlock;
 import dev.dubhe.anvilcraft.api.power.IPowerComponent;
 import dev.dubhe.anvilcraft.block.multipart.SimpleMultiPartBlock;
@@ -15,6 +16,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.*;
@@ -27,6 +30,8 @@ public class EnderPoleBlock extends SimpleMultiPartBlock<Vertical3PartHalf> impl
     //实现super的构造函数
     public EnderPoleBlock() {
         super(Properties.of()
+                .strength(2.0F)
+                .lightLevel(state -> state.getValue(OVERLOAD) && state.getValue(SWITCH) == IPowerComponent.Switch.ON ? 15 : 0)
         );
         this.registerDefaultState(this.stateDefinition.any()
                 .setValue(PARTHALF,Vertical3PartHalf.BOTTOM)
@@ -38,19 +43,16 @@ public class EnderPoleBlock extends SimpleMultiPartBlock<Vertical3PartHalf> impl
 
     public static final BooleanProperty OVERLOAD = IPowerComponent.OVERLOAD;
     public static final BooleanProperty IsFather = BooleanProperty.create("is_father");//此电线杆是否是父级
+    public static final BooleanProperty IsEffective = BooleanProperty.create("is_effective");//此电线杆是否有效
     public static final EnumProperty<IPowerComponent.Switch> SWITCH = IPowerComponent.SWITCH;
 
     public static final EnumProperty<Vertical3PartHalf> PARTHALF =
             EnumProperty.create("half", Vertical3PartHalf.class);//本方块的三部分
-    private static final VoxelShape SHAPE_BOT = Shapes.or(
-            Block.box(3, 4, 3, 13, 10, 13),
-            Block.box(0, 0, 0, 16, 4, 16),
-            Block.box(6, 10, 6, 10, 16, 10));//底部碰撞
-    private static final VoxelShape SHAPE_MID = Block.box(6, 0, 6, 10, 16, 10);//中部碰撞
-    private static final VoxelShape SHAPE_TOP = Shapes.or(//顶部碰撞
-            Block.box(3, 5, 3, 13, 16, 13),
-            Block.box(6, 0, 6, 10, 5, 10)
-    );
+    public static final VoxelShape SHAPE_TOP =
+            Shapes.or(Block.box(3, 5, 3, 13, 16, 13), Block.box(6, 0, 6, 10, 5, 10));
+    public static final VoxelShape SHAPE_MID = Block.box(6, 0, 6, 10, 16, 10);
+    public static final VoxelShape SHAPE_BOT =
+            Shapes.or(Block.box(3, 4, 3, 13, 10, 13), Block.box(0, 0, 0, 16, 4, 16), Block.box(6, 10, 6, 10, 16, 10));
 
     @Override
     public void onRemove(Level level, BlockPos blockPos, BlockState blockState) {
@@ -73,7 +75,7 @@ public class EnderPoleBlock extends SimpleMultiPartBlock<Vertical3PartHalf> impl
     }//方块分为哪几段
 
     @Override
-    protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {//设置每段碰撞
+    public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {//设置每段碰撞
         return switch (state.getValue(PARTHALF)) {
             case BOTTOM -> SHAPE_BOT;
             case MID -> SHAPE_MID;
@@ -93,17 +95,44 @@ public class EnderPoleBlock extends SimpleMultiPartBlock<Vertical3PartHalf> impl
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {//创建一个构建器
-        builder.add(PARTHALF).add(OVERLOAD).add(SWITCH);
+        builder.add(PARTHALF).add(OVERLOAD).add(SWITCH).add(IsFather);//告诉构建器这个方块有四个属性
     }
 
     @Override
     public @Nullable BlockState getPlacementState(BlockPlaceContext context) {//其放置时的默认状态
-        ItemStack stack = context.getItemInHand();//获取物品状态
-        ResourceLocation dim = stack.get(DataComponents.TARGET_DIM);//
-        BlockPos targetPos = stack.get(DataComponents.TARGET_POS);
-        return defaultBlockState().setValue(PARTHALF, Vertical3PartHalf.BOTTOM).
-                setValue(IsFather, dim != null && targetPos != null);
+        return defaultBlockState().setValue(PARTHALF, Vertical3PartHalf.BOTTOM).setValue(IsFather, false);
     }
 
+    @Override
+    public @Nullable <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {
+        if (level.isClientSide)return null;//向游戏注册tick事件
+        return (level1, pos, state1, blockEntity) -> {
+            if (blockEntity instanceof EnderPoleBlockEntity) {
+                ((EnderPoleBlockEntity) blockEntity).tick(level1, pos, state1);
+            }
+        };
+    }
 
+    @Override
+    protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighborBlock, BlockPos neighborPos, boolean movedByPiston) {
+        if (level.isClientSide) return;
+        if (state.getValue(PARTHALF) != Vertical3PartHalf.BOTTOM) return;
+
+        BlockPos topPos = pos.above(2);
+        BlockState topState = level.getBlockState(topPos);
+        if (!topState.is(ModBlocks.ENDERPOLE.get()) || topState.getValue(PARTHALF) != Vertical3PartHalf.TOP) return;
+
+        boolean hasRedstoneSignal = level.hasNeighborSignal(pos);
+        boolean isCurrentlyOff = (state.getValue(SWITCH) == IPowerComponent.Switch.OFF);
+
+        if (isCurrentlyOff != hasRedstoneSignal) {
+            IPowerComponent.Switch nextSwitch = hasRedstoneSignal ? IPowerComponent.Switch.OFF : IPowerComponent.Switch.ON;
+
+            BlockState updatedBottom = state.setValue(SWITCH, nextSwitch);
+            BlockState updatedTop = topState.setValue(SWITCH, nextSwitch);
+
+            level.setBlockAndUpdate(pos, updatedBottom);
+            level.setBlockAndUpdate(topPos, updatedTop);
+        }
+    }
 }

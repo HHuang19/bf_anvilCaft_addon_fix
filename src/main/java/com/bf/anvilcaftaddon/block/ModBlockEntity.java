@@ -14,6 +14,10 @@ public class ModBlockEntity {
             BLOCK_ENTITIES.register("power_block_entity", () ->
                     BlockEntityType.Builder.of(PowerBlockEntity::new, ModBlocks.POWER_BLOCK.get()).build(null)
             );
+    public static final DeferredHolder<BlockEntityType<?> , BlockEntityType<PowerBlockEntity>> EnderPole =
+            BLOCK_ENTITIES.register("ender_pole_entity",()->
+                    BlockEntityType.Builder.of(PowerBlockEntity::new,ModBlocks.POWER_BLOCK.get()).build(null)
+            );
 
 
     public static void register(net.neoforged.bus.api.IEventBus modEventBus) {

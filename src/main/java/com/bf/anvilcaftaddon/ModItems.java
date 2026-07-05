@@ -2,26 +2,34 @@ package com.bf.anvilcaftaddon;
 
 
 import com.bf.anvilcaftaddon.block.ModBlocks;
+import com.bf.anvilcaftaddon.block.blocks.ender_transmission_pole.EnderPoleBlock;
+import com.bf.anvilcaftaddon.block.blocks.ender_transmission_pole.EnderPoleBlockEntity;
 import dev.dubhe.anvilcraft.AnvilCraft;
+import dev.dubhe.anvilcraft.block.state.Vertical3PartHalf;
 import dev.dubhe.anvilcraft.data.AnvilCraftDatagen;
 import it.unimi.dsi.fastutil.Stack;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.TorchBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Objects;
@@ -89,11 +97,47 @@ public class ModItems {
                     super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
                 }
             });
+    public static final DeferredItem<BlockItem> ENDERPOLE_ITEM =
+        ITEMS.register("enderpole", () -> new BlockItem(ModBlocks.ENDERPOLE.get(), new Item.Properties()) {
+            @Override
+            public InteractionResult useOn(UseOnContext context) {
+                if (context.getLevel().getBlockEntity(context.getClickedPos()) instanceof EnderPoleBlockEntity B_E) {
+                    ItemStack _This = context.getItemInHand();
+                    BlockEntity TState = switch (B_E.getBlockState().getValue(EnderPoleBlock.PARTHALF)){
+                        case Vertical3PartHalf.TOP -> context.getLevel().getBlockEntity(context.getClickedPos());
+                        case Vertical3PartHalf.MID -> context.getLevel().getBlockEntity(context.getClickedPos().above(1));
+                        case Vertical3PartHalf.BOTTOM -> context.getLevel().getBlockEntity(context.getClickedPos().above(2));
+                    };
+                    _This.set(DataComponents.TARGET_POS, TState.getBlockPos());
+                    _This.set(DataComponents.TARGET_DIM, TState.getLevel().dimension().location());
+                    context.getPlayer().displayClientMessage(Component.translatable("item.anvilcaftaddon.enderpole.tooltip"), true);
+                    return InteractionResult.SUCCESS;
+                }
+                return super.useOn(context);
+            }
+
+            @Override
+            protected boolean updateCustomBlockEntityTag(
+                BlockPos pos,
+                Level level,
+                @Nullable Player player,
+                ItemStack stack,
+                BlockState state
+            ) {
+                if (level.getBlockEntity(pos.above(2)) instanceof EnderPoleBlockEntity be) {
+                    ResourceLocation dim = stack.get(DataComponents.TARGET_DIM);
+                    BlockPos targetPos = stack.get(DataComponents.TARGET_POS);
+                    if (dim != null && targetPos != null) {
+                        be.Set_Outer(dim, targetPos);  // 标记为子杆
+                        be.setChanged();
+                    }
+                }
+                return super.updateCustomBlockEntityTag(pos, level, player, stack, state);
+            }
+        });
 
     public static final DeferredItem<BlockItem> POWER_BLOCK_ITEM =
             ITEMS.registerSimpleBlockItem("power_block", ModBlocks.POWER_BLOCK);
-    public static final DeferredItem<BlockItem> ENDERPOLE_ITEM =
-            ITEMS.registerSimpleBlockItem("enderpole", ModBlocks.ENDERPOLE);
 
 
 

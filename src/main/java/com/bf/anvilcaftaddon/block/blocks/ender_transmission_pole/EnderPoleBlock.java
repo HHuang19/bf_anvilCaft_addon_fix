@@ -1,13 +1,19 @@
 package com.bf.anvilcaftaddon.block.blocks.ender_transmission_pole;
 
 import com.bf.anvilcaftaddon.DataComponents;
+import com.bf.anvilcaftaddon.ModItems;
 import com.bf.anvilcaftaddon.block.ModBlocks;
 import dev.dubhe.anvilcraft.api.IHasMultiBlock;
 import dev.dubhe.anvilcraft.api.power.IPowerComponent;
 import dev.dubhe.anvilcraft.block.multipart.SimpleMultiPartBlock;
 import dev.dubhe.anvilcraft.block.state.Vertical3PartHalf;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
@@ -21,6 +27,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.*;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -38,6 +45,7 @@ public class EnderPoleBlock extends SimpleMultiPartBlock<Vertical3PartHalf> impl
                 .setValue(OVERLOAD,true)
                 .setValue(SWITCH, IPowerComponent.Switch.OFF)
                 .setValue(IsFather, true)
+                .setValue(IsEffective, false)
         );
     }
 
@@ -95,7 +103,7 @@ public class EnderPoleBlock extends SimpleMultiPartBlock<Vertical3PartHalf> impl
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {//创建一个构建器
-        builder.add(PARTHALF).add(OVERLOAD).add(SWITCH).add(IsFather);//告诉构建器这个方块有四个属性
+        builder.add(PARTHALF).add(OVERLOAD).add(SWITCH).add(IsFather).add(IsEffective);//告诉构建器这个方块有什么属性
     }
 
     @Override
@@ -135,4 +143,50 @@ public class EnderPoleBlock extends SimpleMultiPartBlock<Vertical3PartHalf> impl
             level.setBlockAndUpdate(topPos, updatedTop);
         }
     }
+
+    @Override
+    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        if (level.isClientSide) return InteractionResult.PASS;
+        player.displayClientMessage(Component.literal("右键电线杆，通过客户端测试"), false);
+        if (!state.getValue(IsEffective)) {
+            player.displayClientMessage(Component.literal("对着无效电线杆使用"), false);
+            player.displayClientMessage(Component.translatable("message.ender_pole.noeffective"), false);
+            return InteractionResult.CONSUME;
+        }
+        player.displayClientMessage(Component.literal("线杆有效...下一步..."), false);
+        if (state.getValue(IsFather)) {
+            player.displayClientMessage(Component.literal("右键电线杆中的父级..."), false);
+            if (level.getBlockEntity(pos) instanceof EnderPoleBlockEntity _this) {
+                player.displayClientMessage(Component.literal("确认为有效的电线杆..."), false);
+                if (player.isShiftKeyDown()) {
+                    _this.Set_Power(10, true);
+                    player.displayClientMessage(Component.literal(
+                        Component.translatable("message.ender_pole.set_power_add").append(
+                            Component.literal()
+                        )), false);
+                } else {
+                    _this.Set_Power(10, false);
+                    player.displayClientMessage(Component.translatable("message.ender_pole.set_power_sub"), false);
+                }
+                level.setBlock(pos, state.setValue(IsFather, false), 3);
+            }
+        }
+        return super.use(state, level, pos, player, hand, hit);
+    }
+    @Override
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
+        Player player, InteractionHand hand, BlockHitResult hitResult) {
+        if (stack.is(ModItems.ENDERPOLE_ITEM)) {
+            if (stack.has(DataComponents.TARGET_POS)) {
+                return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            }
+            if (state.is(ModBlocks.ENDERPOLE.get())) {
+                stack.set(DataComponents.TARGET_DIM.get(), level.dimension().location());
+                stack.set(DataComponents.TARGET_POS.get(), pos);
+                return ItemInteractionResult.SUCCESS;
+            }
+        }
+        return super.useItemOn(stack, state, level, pos, player, hand, hitResult);
+    }
+
 }

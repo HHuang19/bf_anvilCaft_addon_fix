@@ -137,7 +137,6 @@ dependencies {
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
 
-    implementation files("libs/anvilcraft-neoforge-1.21.1-1.6.0+snapshot.1958.jar")
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.

@@ -9,5 +9,6 @@
     "block.anvilcaftaddon.power_block":"能量方块",
     "message.ender_pole.noeffective":"你需要为此杆绑定一个子杆以调整其输电量",
     "item.anvilcaftaddon.enderpole.tooltip":"已确定父杆，现在可以绑定子杆",
-    "message.ender_pole.set_power_add": "增加10，现为"
+    "message.ender_pole.set_power_add": "将父端消耗增加10",
+    "message.ender_pole.set_power_sub": "将父端消耗减少10"
 }

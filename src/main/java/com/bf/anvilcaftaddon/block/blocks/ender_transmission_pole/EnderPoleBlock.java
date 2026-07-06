@@ -160,15 +160,12 @@ public class EnderPoleBlock extends SimpleMultiPartBlock<Vertical3PartHalf> impl
                 player.displayClientMessage(Component.literal("确认为有效的电线杆..."), false);
                 if (player.isShiftKeyDown()) {
                     _this.Set_Power(10, true);
-                    player.displayClientMessage(Component.literal(
-                        Component.translatable("message.ender_pole.set_power_add").append(
-                            Component.literal()
-                        )), false);
+                    player.displayClientMessage(Component.translatable("message.ender_pole.set_power_add"), true);
                 } else {
                     _this.Set_Power(10, false);
                     player.displayClientMessage(Component.translatable("message.ender_pole.set_power_sub"), false);
                 }
-                level.setBlock(pos, state.setValue(IsFather, false), 3);
+                level.setBlock(pos, state.setValue(IsFather, true), 3);
             }
         }
         return super.use(state, level, pos, player, hand, hit);

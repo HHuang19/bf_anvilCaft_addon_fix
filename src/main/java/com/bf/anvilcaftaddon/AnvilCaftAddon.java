@@ -2,25 +2,19 @@ package com.bf.anvilcaftaddon;
 
 import com.bf.anvilcaftaddon.block.ModBlockEntity;
 import com.bf.anvilcaftaddon.block.ModBlocks;
-import dev.dubhe.anvilcraft.AnvilCraft;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.CreativeModeTabs;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.event.server.ServerStartingEvent;
-import org.slf4j.Logger;
-
 import com.mojang.logging.LogUtils;
-
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
-import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.neoforge.event.server.ServerStartingEvent;
+import org.slf4j.Logger;
 
 // The value here should match an entry in the META-INF/neoforge.mods.toml file
 @Mod(AnvilCaftAddon.MODID)
@@ -85,6 +79,9 @@ public class AnvilCaftAddon {
 
         // Register our mod's ModConfigSpec so that FML can create and load the config file for us
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+
+        ModCreativeModeTabs.CREATIVE_MODE_TABS.register(modEventBus);
+
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {
@@ -102,12 +99,10 @@ public class AnvilCaftAddon {
 
     // Add the example block item to the building blocks tab
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
-        //if (event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS) {
-            //event.accept(EXAMPLE_BLOCK_ITEM);
-        //}
-        if (event.getTabKey() == CreativeModeTabs.REDSTONE_BLOCKS) {
+        if (event.getTabKey() == ModCreativeModeTabs.ADDON_TAB.getKey()) {
             event.accept(ModItems.Magnet);
             event.accept(ModItems.POWER_BLOCK_ITEM);
+            event.accept(ModItems.ENDERPOLE_ITEM);
         }
     }
 

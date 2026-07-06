@@ -3,9 +3,12 @@ package com.bf.anvilcaftaddon;
 import com.bf.anvilcaftaddon.block.ModBlocks;
 import com.bf.anvilcaftaddon.block.blocks.ender_transmission_pole.EnderPoleBlock;
 import com.bf.anvilcaftaddon.block.blocks.ender_transmission_pole.EnderPoleBlockEntity;
+import com.ibm.icu.impl.UResource;
 import dev.dubhe.anvilcraft.block.state.Vertical3PartHalf;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.InteractionResult;
@@ -133,16 +136,17 @@ public class ModItems {
 
                 @Override
                 protected boolean updateCustomBlockEntityTag(BlockPos pos, Level level, @Nullable Player player, ItemStack stack, BlockState state) {
-                    // 放置方块数据回写行为：在玩家将物品放置到世界上，且方块实体成功创建后触发
-                    if (level.getBlockEntity(pos.above(2)) instanceof EnderPoleBlockEntity be) {
-                        // 读取物品组件中先前右键保存好的“远程目标电线杆”数据
+                    // 1. 刚放下去时，只有当前位置（BOTTOM）的实体是绝对存在的
+                    if (level.getBlockEntity(pos) instanceof EnderPoleBlockEntity be) {
                         ResourceLocation dim = stack.get(DataComponents.TARGET_DIM);
                         BlockPos targetPos = stack.get(DataComponents.TARGET_POS);
 
                         if (dim != null && targetPos != null) {
-                            // 如果存在有效连接数据，将新放置的电线杆标记为远程主杆的“子杆(从节点)”，并执行跨维度握手
-                            be.Set_Outer(dim, targetPos);
-                            be.setChanged(); // 标记数据块更新以进行存档保存
+                            // 先把连接数据稳妥地存在 BOTTOM 身上！
+                            be.TPos = targetPos;
+                            // 存入维度 ID，不在这里急着拿 Level 对象，防止空指针
+                            be.TDim = dim;
+                            be.setChanged();
                         }
                     }
                     return super.updateCustomBlockEntityTag(pos, level, player, stack, state);

@@ -6,5 +6,6 @@
   "enchantment.anvilcaftaddon.double_walk":"Double Walk",
   "enchantment.anvilcaftaddon.double_jump.desc":"Press jump in the air to perform a second jump",
   "enchantment.anvilcaftaddon.double_walk.desc":"Click run to perform a sprint",
-  "block.anvilcaftaddon.power_block":"Power Block"
+  "block.anvilcaftaddon.power_block":"Power Block",
+  "block.anvilcaftaddon.ender_pole":"Ender Pole"
 }
